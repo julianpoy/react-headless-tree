@@ -188,6 +188,7 @@ export const dragAndDropFeature: FeatureImplementation = {
         const dataRef = tree.getDataRef<DndDataRef>();
         const placement = getTargetPlacement(e, item, tree, true);
         const nextDragCode = getDragCode(item, placement);
+        dataRef.current.lastDragOver = Date.now();
 
         if (nextDragCode === dataRef.current.lastDragCode) {
           if (dataRef.current.lastAllowDrop) {
@@ -196,7 +197,6 @@ export const dragAndDropFeature: FeatureImplementation = {
           return;
         }
         dataRef.current.lastDragCode = nextDragCode;
-        dataRef.current.lastDragEnter = Date.now();
 
         handleAutoOpenFolder(dataRef, tree, item, placement);
 
@@ -231,7 +231,7 @@ export const dragAndDropFeature: FeatureImplementation = {
       onDragLeave: () => {
         setTimeout(() => {
           const dataRef = tree.getDataRef<DndDataRef>();
-          if ((dataRef.current.lastDragEnter ?? 0) + 100 >= Date.now()) return;
+          if ((dataRef.current.lastDragOver ?? 0) + 100 >= Date.now()) return;
           dataRef.current.lastDragCode = "no-drag";
           tree.applySubStateUpdate("dnd", (state) => ({
             ...state,
